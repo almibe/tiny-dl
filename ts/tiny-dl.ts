@@ -4,9 +4,7 @@ export type Symbol = string
 
 type AtomicConcept = Symbol
 
-type CompoundConcept = Disjuction | Conjuction | Equivalence | Not | Subsumption
-
-type Concept = AtomicConcept | CompoundConcept
+type Concept = AtomicConcept | Disjuction | Conjuction | Equivalence | Not | Subsumption
 
 type Role = Symbol
 
@@ -34,34 +32,34 @@ export function conjuction(left: Concept, right: Concept): Conjuction {
     return { left: left, right: right, relation: "conjunction" }
 }
 
-export type Disjuction = { left: Concept, right: Concept, relation: "disjunction" }
+export type Disjuction = { left: Concept, right: Concept, kind: "disjunction" }
 
 export function disjuction(left: Concept, right: Concept): Disjuction {
-    return { left: left, right: right, relation: "disjunction" }
+    return { left: left, right: right, kind: "disjunction" }
 }
 
-export type ExistentialRestriction = { concept: Concept, role: Role, relation: "existentialRestriction" }
+export type ExistentialRestriction = { concept: Concept, role: Role, kind: "existentialRestriction" }
 
 export function existentialRestriction(concept: Concept, role: Role): ExistentialRestriction {
-    return { concept: concept, role: role, relation: "existentialRestriction" }
+    return { concept: concept, role: role, kind: "existentialRestriction" }
 }
 
-export type ValueRestriction = { concept: Concept, role: Role, relation: "valueRestriction" }
+export type ValueRestriction = { concept: Concept, role: Role, kind: "valueRestriction" }
 
 export function valueRestriction(concept: Concept, role: Role): ValueRestriction {
-    return { concept: concept, role: role, relation: "valueRestriction" }
+    return { concept: concept, role: role, kind: "valueRestriction" }
 }
 
-export type Individual = {individual: Symbol, concept: Symbol } 
+export type Individual = {individual: Symbol, concept: Concept } 
 
-export function individual(symbol: Symbol, concept: Symbol): Individual {
+export function individual(symbol: Symbol, concept: Concept): Individual {
     return {individual: symbol, concept: concept }
 }
 
-export type RoleInstance = { symbol: Symbol, left: Symbol, right: Symbol }
+export type RoleInstance = { role: Role, left: Concept, right: Concept }
 
-export function roleInstance(symbol: Symbol, left: Symbol, right: Symbol) {
-    return { symbol: symbol, left: left, right: right }
+export function roleInstance(role: Role, left: Concept, right: Concept): RoleInstance {
+    return { role: role, left: left, right: right }
 }
 
 export type ABox = Set<Individual | RoleInstance>
