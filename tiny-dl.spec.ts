@@ -1,51 +1,64 @@
 import { expect, test } from 'vitest'
-import { infer, Statements, Subsumption, IsA, Equalivant } from './tiny-dl.ts'
-import { List, Set } from 'immutable'
+import { infer, individual, subsumes, equalivant, conjuction } from './tiny-dl.ts'
+import { Set } from 'immutable'
 
 test('basic infer', () => {
-    const aBox: Statements = Set([List(["betty", IsA, "Cat"])])
-    const tBox: Statements = Set([List(["Cat", Subsumption, "Animal"])])
+    const aBox = Set([individual("betty", "Cat")])
+    const tBox = Set([subsumes("Animal", "Cat")])
 
     expect(infer(tBox, aBox)).toEqual(Set([
-        List(["betty", IsA, "Cat"]),
-        List(["betty", IsA, "Animal"])
+        individual("betty", "Cat"),
+        individual("betty", "Animal")
     ]))
 })
 
 test('extented infer', () => {
-    const aBox: Statements = Set([List(["betty", IsA, "Cat"])])
-    const tBox: Statements = Set([
-        List(["Cat", Subsumption, "Vetebrate"]),
-        List(["Vetebrate", Subsumption, "Animal"]),
+    const aBox = Set([individual("betty", "Cat")])
+    const tBox = Set([
+        subsumes("Vetebrate", "Cat"),
+        subsumes("Animal", "Vetebrate"),
     ])
 
     expect(infer(tBox, aBox)).toEqual(Set([
-        List(["betty", IsA, "Cat"]),
-        List(["betty", IsA, "Animal"]),
-        List(["betty", IsA, "Vetebrate"])
+        individual("betty", "Cat"),
+        individual("betty", "Animal"),
+        individual("betty", "Vetebrate")
     ]))
 })
 
 test('equivalency', () => {
-    const aBox: Statements = Set([List(["betty", IsA, "HouseCat"])])
-    const tBox: Statements = Set([
-        List(["HouseCat", Equalivant, "DomesticCat"]),
+    const aBox = Set([individual("betty", "HouseCat")])
+    const tBox = Set([
+        equalivant("HouseCat", "DomesticCat")
     ])
 
     expect(infer(tBox, aBox)).toEqual(Set([
-        List(["betty", IsA, "HouseCat"]),
-        List(["betty", IsA, "DomesticCat"]),
+        individual("betty", "HouseCat"),
+        individual("betty", "DomesticCat"),
     ]))
 })
 
 test('equivalency flipped', () => {
-    const aBox: Statements = Set([List(["betty", IsA, "HouseCat"])])
-    const tBox: Statements = Set([
-        List(["DomesticCat", Equalivant, "HouseCat"]),
+    const aBox = Set([individual("betty", "HouseCat")])
+    const tBox = Set([
+        equalivant("DomesticCat", "HouseCat"),
     ])
 
     expect(infer(tBox, aBox)).toEqual(Set([
-        List(["betty", IsA, "HouseCat"]),
-        List(["betty", IsA, "DomesticCat"]),
+        individual("betty", "HouseCat"),
+        individual("betty", "DomesticCat"),
+    ]))
+})
+
+test('concept intersection', () => {
+    const aBox = Set([individual("betty", "Spayed")])
+    const tBox = Set([
+        equalivant("Spayed", conjuction("Female", "Fixed")),
+    ])
+
+    expect(infer(tBox, aBox)).toEqual(Set([
+        individual("betty", "Spayed"),
+        individual("betty", "Female"),
+        individual("betty", "Fixed")
     ]))
 })
