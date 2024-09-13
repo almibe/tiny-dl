@@ -1,0 +1,10 @@
+[package]
+name = "tiny-dl"
+description = "An experimental crate for exploring Description Logic."
+version = "0.1.0"
+authors = ["Alex Michael Berry <alexmiberry@gmail.com>"]
+edition = "2021"
+license = "MPL-2.0"
+repository = "https://github.com/almibe/tiny-dl/"
+
+[dependencies]
